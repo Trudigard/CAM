@@ -897,11 +897,10 @@ contains
        do c = begchunk,endchunk
           do i = 1,get_ncols_p(c)
              cam_in(c)%fdms(i) = -fldptr1d(g) * med2mod_areacor(g)
-             cam_in(c)%cflx(i,pndx_fdms) = cam_in(c)%fdms(i)
              g = g + 1
           end do
           ncols = get_ncols_p(c)
-          call outfld( sflxnam(pndx_fdms), cam_in(c)%cflx(:ncols,pndx_fdms), ncols, c)
+          call outfld( sflxnam(pndx_fdms), cam_in(c)%fdms, ncols, c)
        end do
     end if
 
