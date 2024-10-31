@@ -893,11 +893,14 @@ contains
     call state_getfldptr(importState,  'Faoo_fdms_ocn', fldptr=fldptr1d, exists=exists, rc=rc)
     if (exists) then
        call cnst_get_ind('DMS', pndx_fdms, abort=.true.)
-       ! Ideally what should happen below is that cam_in%cflx(icol,pndx_fdms) should be set directory from
-       ! fldptr1d. However, the current code in initializes the chemistry consituents surface fluxes
-       ! (i.e.cam_in%cflx(:,:)) to zero in the routine chem_emissions in the module chemistry in
-       ! mozart/chemistry.F90. Introducing cam_in(c)%fdms below stores this information until it can be updated in
-       ! aero_model.F90 when oslo-aero is used.
+       ! Ideally what should happen below is that
+       ! cam_in%cflx(icol,pndx_fdms) should be set directly from
+       ! fldptr1d. However, the code initializes the chemistry
+       ! consituents surface fluxes (i.e.cam_in%cflx(:,:)) to zero in
+       ! the routine in mozart/chemistry.F90 at the start of every
+       ! time step.  Introducing cam_in(c)%fdms below stores this
+       ! information until it can be updated in aero_model.F90 when
+       ! oslo-aero is used.
        g = 1
        do c = begchunk,endchunk
           do i = 1,get_ncols_p(c)
