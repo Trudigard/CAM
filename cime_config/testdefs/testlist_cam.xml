@@ -89,16 +89,16 @@
       <machine name="betzy" compiler="intel" category="prealpha_noresm"/>
     </machines>
     <options>
-      <option name="wallclock">00:10:00</option>
+      <option name="wallclock">00:20:00</option>
     </options>
   </test>
 
-  <test compset="F2000climo" grid="ne30pg3_ne30pg3_mtn14" name="ERP_D_Ln9_P36" testmods="cam/outfrq9s">
+  <test compset="F2000climo" grid="ne30pg3_ne30pg3_mtn14" name="ERP_D_Ln9_P512" testmods="cam/outfrq9s">
     <machines>
       <machine name="betzy" compiler="intel" category="aux_cam_noresm"/>
     </machines>
     <options>
-      <option name="wallclock">00:10:00</option>
+      <option name="wallclock">00:25:00</option>
     </options>
   </test>
 

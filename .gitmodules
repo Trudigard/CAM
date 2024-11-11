@@ -33,14 +33,14 @@
 [submodule "atmos_phys"]
 	path = src/atmos_phys
 	url = https://github.com/ESCOMP/atmospheric_physics
-	fxtag = atmos_phys0_06_009
+	fxtag = atmos_phys0_05_001
 	fxrequired = AlwaysRequired
 	fxDONOTUSEurl = https://github.com/ESCOMP/atmospheric_physics
 
 [submodule "camnor_phys"]
 	path = src/physics/camnor_phys
 	url = https://github.com/NorESMhub/CAM-Nor-physics
-	fxtag = camnor_noresm_v0.0.5
+	fxtag = camnor_noresm_v0.0.6
         fxrequired = AlwaysRequired
         fxDONOTUSEurl = https://github.com/CAM-Nor-physics.git
 
