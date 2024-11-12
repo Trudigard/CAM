@@ -10,10 +10,10 @@ module phys_control
 !                             Add vars to indicate physics version and chemistry type.
 !-----------------------------------------------------------------------
 
-use spmd_utils,        only: masterproc
-use cam_logfile,       only: iulog
-use cam_abortutils,    only: endrun
-use shr_kind_mod,      only: r8 => shr_kind_r8, cl=>shr_kind_cl
+use spmd_utils,     only: masterproc
+use cam_logfile,    only: iulog
+use cam_abortutils, only: endrun
+use shr_kind_mod,   only: r8 => shr_kind_r8, cl=>shr_kind_cl
 
 implicit none
 private
@@ -98,6 +98,7 @@ logical, public, protected :: use_gw_front = .false.      ! Frontogenesis.
 logical, public, protected :: use_gw_front_igw = .false.  ! Frontogenesis to inertial spectrum.
 logical, public, protected :: use_gw_convect_dp = .false. ! Deep convection.
 logical, public, protected :: use_gw_convect_sh = .false. ! Shallow convection.
+logical, public, protected :: use_gw_movmtn_pbl = .false. ! moving mountain
 
 ! FV dycore angular momentum correction
 logical, public, protected :: fv_am_correction = .false.
@@ -136,7 +137,7 @@ subroutine phys_ctl_readnl(nlfile)
       history_waccmx, history_chemistry, history_carma, history_clubb, history_dust, &
       history_cesm_forcing, history_scwaccm_forcing, history_chemspecies_srf, &
       do_clubb_sgs, state_debug_checks, use_hetfrz_classnuc, use_gw_oro, use_gw_front, &
-      use_gw_front_igw, use_gw_convect_dp, use_gw_convect_sh, cld_macmic_num_steps, &
+      use_gw_front_igw, use_gw_convect_dp, use_gw_convect_sh, use_gw_movmtn_pbl, cld_macmic_num_steps, &
       offline_driver, convproc_do_aer, cam_snapshot_before_num, cam_snapshot_after_num, &
       cam_take_snapshot_before, cam_take_snapshot_after, cam_physics_mesh, use_hemco, do_hb_above_clubb
    !-----------------------------------------------------------------------------
@@ -193,6 +194,7 @@ subroutine phys_ctl_readnl(nlfile)
    call mpi_bcast(use_gw_front_igw,            1,                     mpi_logical,   masterprocid, mpicom, ierr)
    call mpi_bcast(use_gw_convect_dp,           1,                     mpi_logical,   masterprocid, mpicom, ierr)
    call mpi_bcast(use_gw_convect_sh,           1,                     mpi_logical,   masterprocid, mpicom, ierr)
+   call mpi_bcast(use_gw_movmtn_pbl,           1,                     mpi_logical,   masterprocid, mpicom, ierr)
    call mpi_bcast(cld_macmic_num_steps,        1,                     mpi_integer,   masterprocid, mpicom, ierr)
    call mpi_bcast(offline_driver,              1,                     mpi_logical,   masterprocid, mpicom, ierr)
    call mpi_bcast(convproc_do_aer,             1,                     mpi_logical,   masterprocid, mpicom, ierr)
@@ -242,21 +244,21 @@ subroutine phys_ctl_readnl(nlfile)
       endif
    endif
 
-   if (cam_physpkg_is("cam_dev")) then
+   if (cam_physpkg_is("cam7")) then
       ! Check that eddy_scheme, macrop_scheme, shallow_scheme are all set to CLUBB
       if (eddy_scheme /= 'CLUBB_SGS' .or. macrop_scheme /= 'CLUBB_SGS' .or. shallow_scheme /= 'CLUBB_SGS') then
-         write(iulog,*) 'cam_dev is only compatible with CLUBB.  Quitting'
-         call endrun('cam_dev is only compatible with eddy, macrop, and shallow schemes = CLUBB_SGS')
+         write(iulog,*) 'cam7 is only compatible with CLUBB.  Quitting'
+         call endrun('cam7 is only compatible with eddy, macrop, and shallow schemes = CLUBB_SGS')
       end if
       ! Add a check to make sure SPCAM is not used
       if (use_spcam) then
-         write(iulog,*)'SPCAM not compatible with cam_dev physics.  Quitting'
-         call endrun('SPCAM and cam_dev incompatible')
+         write(iulog,*)'SPCAM not compatible with cam7 physics.  Quitting'
+         call endrun('SPCAM and cam7 incompatible')
       end if
       ! Add check to make sure we are not trying to use `camrt`
       if (trim(radiation_scheme) == 'camrt') then
-         write(iulog,*) ' camrt specified and it is not compatible with cam_dev'
-         call endrun('cam_dev is not compatible with camrt radiation scheme')
+         write(iulog,*) ' camrt specified and it is not compatible with cam7'
+         call endrun('cam7 is not compatible with camrt radiation scheme')
       end if
    end if
 

@@ -101,7 +101,8 @@ module physics_types
                            ! Second dimension is (phys_te_idx) CAM physics total energy and
                            ! (dyn_te_idx) dycore total energy computed in physics
           te_ini,         &! vertically integrated total (kinetic + static) energy of initial state
-          te_cur,         &! vertically integrated total (kinetic + static) energy of current state
+          te_cur           ! vertically integrated total (kinetic + static) energy of current state
+     real(r8), dimension(:), allocatable           :: &
           tw_ini,         &! vertically integrated total water of initial state
           tw_cur           ! vertically integrated total water of new state
      real(r8), dimension(:,:),allocatable          :: &
@@ -537,9 +538,9 @@ contains
          varname="state%te_ini",    msg=msg)
     call shr_assert_in_domain(state%te_cur(:ncol,:),    is_nan=.false., &
          varname="state%te_cur",    msg=msg)
-    call shr_assert_in_domain(state%tw_ini(:ncol,:),    is_nan=.false., &
+    call shr_assert_in_domain(state%tw_ini(:ncol),      is_nan=.false., &
          varname="state%tw_ini",    msg=msg)
-    call shr_assert_in_domain(state%tw_cur(:ncol,:),    is_nan=.false., &
+    call shr_assert_in_domain(state%tw_cur(:ncol),      is_nan=.false., &
          varname="state%tw_cur",    msg=msg)
     call shr_assert_in_domain(state%temp_ini(:ncol,:),  is_nan=.false., &
          varname="state%temp_ini",  msg=msg)
@@ -615,9 +616,9 @@ contains
          varname="state%te_ini",    msg=msg)
     call shr_assert_in_domain(state%te_cur(:ncol,:),    lt=posinf_r8, gt=neginf_r8, &
          varname="state%te_cur",    msg=msg)
-    call shr_assert_in_domain(state%tw_ini(:ncol,:),    lt=posinf_r8, gt=neginf_r8, &
+    call shr_assert_in_domain(state%tw_ini(:ncol),      lt=posinf_r8, gt=neginf_r8, &
          varname="state%tw_ini",    msg=msg)
-    call shr_assert_in_domain(state%tw_cur(:ncol,:),    lt=posinf_r8, gt=neginf_r8, &
+    call shr_assert_in_domain(state%tw_cur(:ncol),      lt=posinf_r8, gt=neginf_r8, &
          varname="state%tw_cur",    msg=msg)
     call shr_assert_in_domain(state%temp_ini(:ncol,:),  lt=posinf_r8, gt=neginf_r8, &
          varname="state%temp_ini",  msg=msg)
@@ -1351,8 +1352,8 @@ end subroutine physics_ptend_copy
      end do
      state_out%te_ini(:ncol,:) = state_in%te_ini(:ncol,:)
      state_out%te_cur(:ncol,:) = state_in%te_cur(:ncol,:)
-     state_out%tw_ini(:ncol,:) = state_in%tw_ini(:ncol,:)
-     state_out%tw_cur(:ncol,:) = state_in%tw_cur(:ncol,:)
+     state_out%tw_ini(:ncol)   = state_in%tw_ini(:ncol)
+     state_out%tw_cur(:ncol)   = state_in%tw_cur(:ncol)
 
     do k = 1, pver
        do i = 1, ncol
@@ -1481,40 +1482,72 @@ end subroutine set_state_pdry
 
 !===============================================================================
 
-subroutine set_wet_to_dry (state)
+subroutine set_wet_to_dry(state, convert_cnst_type)
+
+  ! Convert mixing ratios from a wet to dry basis for constituents of type
+  ! convert_cnst_type.  Constituents are given a type when they are added
+  ! to the constituent array by a call to cnst_add during the register
+  ! phase of initialization.  There are two constituent types: 'wet' for
+  ! water species and 'dry' for non-water species.
 
   use constituents,  only: pcnst, cnst_type
 
   type(physics_state), intent(inout) :: state
+  character(len=3),    intent(in)    :: convert_cnst_type
 
+  ! local variables
   integer m, ncol
+  character(len=*), parameter :: sub = 'set_wet_to_dry'
+  !-----------------------------------------------------------------------------
+
+  ! check input
+  if (.not.(convert_cnst_type == 'wet' .or. convert_cnst_type == 'dry')) then
+    write(iulog,*) sub//': FATAL: convert_cnst_type not recognized: '//convert_cnst_type
+    call endrun(sub//': FATAL: convert_cnst_type not recognized: '//convert_cnst_type)
+  end if
 
   ncol = state%ncol
 
-  do m = 1,pcnst
-     if (cnst_type(m).eq.'dry') then
+  do m = 1, pcnst
+     if (cnst_type(m) == convert_cnst_type) then
         state%q(:ncol,:,m) = state%q(:ncol,:,m)*state%pdel(:ncol,:)/state%pdeldry(:ncol,:)
-     endif
+     end if
   end do
 
 end subroutine set_wet_to_dry
 
 !===============================================================================
 
-subroutine set_dry_to_wet (state)
+subroutine set_dry_to_wet(state, convert_cnst_type)
+
+  ! Convert mixing ratios from a dry to wet basis for constituents of type
+  ! convert_cnst_type.  Constituents are given a type when they are added
+  ! to the constituent array by a call to cnst_add during the register
+  ! phase of initialization.  There are two constituent types: 'wet' for
+  ! water species and 'dry' for non-water species.
 
   use constituents,  only: pcnst, cnst_type
 
   type(physics_state), intent(inout) :: state
+  character(len=3),    intent(in)    :: convert_cnst_type
 
+  ! local variables
   integer m, ncol
+  character(len=*), parameter :: sub = 'set_dry_to_wet'
+  !-----------------------------------------------------------------------------
+
+  ! check input
+  if (.not.(convert_cnst_type == 'wet' .or. convert_cnst_type == 'dry')) then
+    write(iulog,*) sub//': FATAL: convert_cnst_type not recognized: '//convert_cnst_type
+    call endrun(sub//': FATAL: convert_cnst_type not recognized: '//convert_cnst_type)
+  end if
 
   ncol = state%ncol
 
-  do m = 1,pcnst
-     if (cnst_type(m).eq.'dry') then
+  do m = 1, pcnst
+     if (cnst_type(m) == convert_cnst_type) then
         state%q(:ncol,:,m) = state%q(:ncol,:,m)*state%pdeldry(:ncol,:)/state%pdel(:ncol,:)
-     endif
+     end if
   end do
 
 end subroutine set_dry_to_wet
@@ -1635,10 +1668,10 @@ subroutine physics_state_alloc(state,lchnk,psetcols)
   allocate(state%te_cur(psetcols,2), stat=ierr)
   if ( ierr /= 0 ) call endrun('physics_state_alloc error: allocation error for state%te_cur')
 
-  allocate(state%tw_ini(psetcols,2), stat=ierr)
+  allocate(state%tw_ini(psetcols), stat=ierr)
   if ( ierr /= 0 ) call endrun('physics_state_alloc error: allocation error for state%tw_ini')
 
-  allocate(state%tw_cur(psetcols,2), stat=ierr)
+  allocate(state%tw_cur(psetcols), stat=ierr)
   if ( ierr /= 0 ) call endrun('physics_state_alloc error: allocation error for state%tw_cur')
 
   allocate(state%temp_ini(psetcols,pver), stat=ierr)
@@ -1688,8 +1721,8 @@ subroutine physics_state_alloc(state,lchnk,psetcols)
 
   state%te_ini(:,:) = inf
   state%te_cur(:,:) = inf
-  state%tw_ini(:,:) = inf
-  state%tw_cur(:,:) = inf
+  state%tw_ini(:) = inf
+  state%tw_cur(:) = inf
   state%temp_ini(:,:) = inf
   state%z_ini(:,:)  = inf
 

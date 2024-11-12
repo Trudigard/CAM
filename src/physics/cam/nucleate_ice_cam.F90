@@ -261,7 +261,7 @@ subroutine nucleate_ice_cam_init(mincld_in, bulk_scale_in, pbuf2d, aero_props)
      call endrun(routine//': ERROR qsatfac is required when subgrid = -1 or subgrid_strat = -1')
    end if
 
-   if (cam_physpkg_is("cam_dev")) then
+   if (cam_physpkg_is("cam7")) then
       ! Updates for PUMAS v1.21+
       call addfld('NIHFTEN',  (/ 'lev' /), 'A', '1/m3/s', 'Activated Ice Number Concentration tendency due to homogenous freezing')
       call addfld('NIDEPTEN', (/ 'lev' /), 'A', '1/m3/s', 'Activated Ice Number Concentration tendency due to deposition nucleation')
@@ -286,7 +286,7 @@ subroutine nucleate_ice_cam_init(mincld_in, bulk_scale_in, pbuf2d, aero_props)
       call addfld ('WICE',     (/ 'lev' /), 'A','m/s','Vertical velocity Reduction caused by preexisting ice'  )
       call addfld ('WEFF',     (/ 'lev' /), 'A','m/s','Effective Vertical velocity for ice nucleation' )
 
-      if (cam_physpkg_is("cam_dev")) then
+      if (cam_physpkg_is("cam7")) then
          ! Updates for PUMAS v1.21+
          call addfld ('INnso4TEN',   (/ 'lev' /), 'A','1/m3/s','Number Concentration tendency so4 (in) to ice_nucleation')
          call addfld ('INnbcTEN',    (/ 'lev' /), 'A','1/m3/s','Number Concentration tendency bc  (in) to ice_nucleation')
@@ -522,6 +522,9 @@ subroutine nucleate_ice_cam_calc( &
    ! Use the same criteria that is used in chemistry and in CLUBB (for cloud fraction)
    ! to determine whether to use tropospheric or stratospheric settings. Include the
    ! tropopause level so that the cold point tropopause will use the stratospheric values.
+   !REMOVECAM - no longer need this when CAM is retired and pcols no longer exists
+   troplev(:) = 0
+   !REMOVECAM_END
    call tropopause_findChemTrop(state, troplev)
 
    if ((nucleate_ice_subgrid .eq. -1._r8) .or. (nucleate_ice_subgrid_strat .eq. -1._r8)) then
@@ -627,7 +630,7 @@ subroutine nucleate_ice_cam_calc( &
             ! *** Turn off soot nucleation ***
             soot_num = 0.0_r8
 
-            if (cam_physpkg_is("cam_dev")) then
+            if (cam_physpkg_is("cam7")) then
 
                call nucleati( &
                     wsubi(i,k), t(i,k), pmid(i,k), relhum(i,k), icldm(i,k),   &
@@ -768,7 +771,7 @@ subroutine nucleate_ice_cam_calc( &
                end if
             end if
 
-            if (cam_physpkg_is("cam_dev")) then
+            if (cam_physpkg_is("cam7")) then
                !Updates for pumas v1.21+
 
                naai_hom(i,k) = nihf(i,k)/dtime
@@ -808,7 +811,7 @@ subroutine nucleate_ice_cam_calc( &
                   endif
                endif
 
-            else ! Not cam_dev
+            else ! Not cam7
 
                naai_hom(i,k) = nihf(i,k)
 
@@ -846,7 +849,7 @@ subroutine nucleate_ice_cam_calc( &
                   endif
                end if
 
-            end if ! cam_dev
+            end if ! cam7
          end if freezing
       end do iloop
    end do kloop
@@ -857,7 +860,7 @@ subroutine nucleate_ice_cam_calc( &
            maerosol)
    end if
 
-   if (cam_physpkg_is("cam_dev")) then
+   if (cam_physpkg_is("cam7")) then
       ! Updates for PUMAS v1.21+
       call outfld('NIHFTEN',   nihf, pcols, lchnk)
       call outfld('NIIMMTEN', niimm, pcols, lchnk)
@@ -877,7 +880,7 @@ subroutine nucleate_ice_cam_calc( &
       call outfld( 'fhom' , fhom, pcols, lchnk)
       call outfld( 'WICE' , wice, pcols, lchnk)
       call outfld( 'WEFF' , weff, pcols, lchnk)
-      if (cam_physpkg_is("cam_dev")) then
+      if (cam_physpkg_is("cam7")) then
          ! Updates for PUMAS v1.21+
          call outfld('INnso4TEN',INnso4 , pcols,lchnk)
          call outfld('INnbcTEN',INnbc  , pcols,lchnk)
