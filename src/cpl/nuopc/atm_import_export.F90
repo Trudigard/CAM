@@ -894,15 +894,22 @@ contains
     call state_getfldptr(importState,  'Faoo_fdms_ocn', fldptr=fldptr1d, exists=exists, rc=rc)
     if (exists) then
        call cnst_get_ind('DMS', pndx_fdms, abort=.true.)
+       ! Ideally what should happen below is that
+       ! cam_in%cflx(icol,pndx_fdms) should be set directly from
+       ! fldptr1d. However, the code initializes the chemistry
+       ! consituents surface fluxes (i.e.cam_in%cflx(:,:)) to zero in
+       ! the routine in mozart/chemistry.F90 at the start of every
+       ! time step.  Introducing cam_in(c)%fdms below stores this
+       ! information until it can be updated in aero_model.F90 when
+       ! oslo-aero is used.
        g = 1
        do c = begchunk,endchunk
           do i = 1,get_ncols_p(c)
              cam_in(c)%fdms(i) = -fldptr1d(g) * med2mod_areacor(g)
-             cam_in(c)%cflx(i,pndx_fdms) = cam_in(c)%fdms(i)
              g = g + 1
           end do
           ncols = get_ncols_p(c)
-          call outfld( sflxnam(pndx_fdms), cam_in(c)%cflx(:ncols,pndx_fdms), ncols, c)
+          call outfld( sflxnam(pndx_fdms), cam_in(c)%fdms, ncols, c)
        end do
     end if
 
