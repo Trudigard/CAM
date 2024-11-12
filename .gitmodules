@@ -41,8 +41,8 @@
 	path = src/physics/camnor_phys
 	url = https://github.com/NorESMhub/CAM-Nor-physics
 	fxtag = camnor_noresm_v0.0.6
-        fxrequired = AlwaysRequired
-        fxDONOTUSEurl = https://github.com/CAM-Nor-physics.git
+  fxrequired = AlwaysRequired
+  fxDONOTUSEurl = https://github.com/NorESMhub/CAM-Nor-physics
 
 [submodule "carma"]
 	path = src/physics/carma/base
