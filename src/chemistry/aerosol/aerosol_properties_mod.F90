@@ -57,33 +57,54 @@ module aerosol_properties_mod
      procedure :: indexer
      procedure :: maxsat
      procedure(aero_amcube), deferred :: amcube
+! CVB: amcube = radius in m squared, use? why not
      procedure :: alogsig_0list
      procedure(aero_alogsig_rlist), deferred :: alogsig_rlist
      generic :: alogsig =>  alogsig_0list,alogsig_rlist
+! CVB: skip these above
      procedure(aero_number_transported), deferred :: number_transported
+! CVB: ignore for now (in modal, set to -1 for now)
      procedure(aero_props_get), deferred :: get
+! CVB: get some info on properties
      procedure(aero_actfracs), deferred :: actfracs
+! CVB: activated fraction set to 0 in the beginning
      procedure(aero_num_names), deferred :: num_names
+! CVB: one constituent for each transported tracer (bins+range_species*ranges) ambient+cloud_borne
+! CVB: Are these tracers doubled in microphysics? How do they live in the clouds?
      procedure(aero_mmr_names), deferred :: mmr_names
+! CVB: mmr for each constituent
      procedure(aero_amb_num_name), deferred :: amb_num_name
+! CVB: same as above
      procedure(aero_amb_mmr_name), deferred :: amb_mmr_name
      procedure(aero_species_type), deferred :: species_type
+! CVB: in rad_cnst_info
      procedure(aero_icenuc_updates_num), deferred :: icenuc_updates_num
+! CVB:
      procedure(aero_icenuc_updates_mmr), deferred :: icenuc_updates_mmr
      procedure(aero_apply_num_limits), deferred :: apply_number_limits
+! CVB: weird! Ignore because modal..?
      procedure(aero_hetfrz_species), deferred :: hetfrz_species
+! CVB: icenucleation
      procedure :: soa_equivso4_factor ! SOA Hygroscopicity / Sulfate Hygroscopicity
      procedure :: pom_equivso4_factor ! POM Hygroscopicity / Sulfate Hygroscopicity
      procedure(aero_soluble), deferred :: soluble
+! CVB: everything except primary C is soluble..
      procedure(aero_min_mass_mean_rad), deferred :: min_mass_mean_rad
+! CVB: minimal radius for each bin
      procedure(aero_optics_params), deferred :: optics_params
+! CVB: fill with some default values (it's a Michael task!)
      procedure(aero_bin_name), deferred :: bin_name
+! CVB: probably need this
      procedure(aero_scav_diam), deferred :: scav_diam
+! CVB: return the median/mean diameter of the bin
      procedure(aero_resuspension_resize), deferred :: resuspension_resize
+! CVB: forget about it for now
      procedure(aero_rebin_bulk_fluxes), deferred :: rebin_bulk_fluxes
+! CVB: why is this a property and not a state?
      procedure(aero_hydrophilic), deferred :: hydrophilic
-
+! CVB: feels weird! ignore, just used for soot. Maybe just return TRUE for everything except nucleation range
      procedure :: final=>aero_props_final
+
   end type aerosol_properties
 
   integer,public, parameter :: aero_name_len = 32 ! common length of aersols names, species, etc
