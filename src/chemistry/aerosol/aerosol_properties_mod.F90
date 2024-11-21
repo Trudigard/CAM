@@ -23,21 +23,29 @@ module aerosol_properties_mod
      private
      integer :: nbins_ = 0  ! number of aerosol bins
      integer :: ncnst_tot_ = 0 ! total number of constituents
+! CVB: is this species+size tracers? total tracer number that is advected, without the 0s?
      integer, allocatable :: nmasses_(:) ! number of species masses
+! CVB: number of species in a range? (range=bins with same chemical composition)
      integer, allocatable :: nspecies_(:) ! number of species
+! CVB: number of species in a range
      integer, allocatable :: indexer_(:,:) ! unique indices of the aerosol elements
      real(r8), allocatable :: alogsig_(:) ! natural log of geometric deviation of the number distribution for aerosol bin
+! CVB: alogsig does not make sense for sectional -> replace by bin-width?
      real(r8), allocatable :: f1_(:) ! eq 28 Abdul-Razzak et al 1998
      real(r8), allocatable :: f2_(:) ! eq 29 Abdul-Razzak et al 1998
+! CVB: Activation, replace maybe? or ignore
      ! Abdul-Razzak, H., S.J. Ghan, and C. Rivera-Carpio, A parameterization of aerosol activation,
      ! 1, Singleaerosoltype. J. Geophys. Res., 103, 6123-6132, 1998.
      real(r8) :: soa_equivso4_factor_ = -huge(1._r8)
      real(r8) :: pom_equivso4_factor_ = -huge(1._r8)
+! CVB: hygroscopicity soa/pom vs so4 (doesn't harm)
    contains
      procedure :: initialize => aero_props_init
      procedure,private :: nbins_0list
      procedure(aero_nbins_rlist), deferred :: nbins_rlist
      generic :: nbins => nbins_0list,nbins_rlist
+! CVB: nbins can be either nbins_0list or nbins_rlist, same as nr of modes
+! CVB: what is the list index in radiation? Is this wavelength/bands/...?
      procedure :: ncnst_tot
      procedure,private :: nspecies_per_bin
      procedure(aero_nspecies_rlist), deferred :: nspecies_per_bin_rlist
