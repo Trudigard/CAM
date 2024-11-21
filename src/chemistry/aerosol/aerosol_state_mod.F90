@@ -27,38 +27,60 @@ module aerosol_state_mod
    contains
      procedure(aero_get_transported), deferred :: get_transported
      procedure(aero_set_transported), deferred :: set_transported
+! CVB: both not implemented yet
      procedure(aero_get_amb_total_bin_mmr), deferred :: ambient_total_bin_mmr
+! CVB: get mmr corresponding to each bin. We need this
      procedure(aero_get_state_mmr), deferred :: get_ambient_mmr_0list
      procedure(aero_get_list_mmr), deferred :: get_ambient_mmr_rlist
+! CVB: ignore for now
      generic :: get_ambient_mmr=>get_ambient_mmr_0list,get_ambient_mmr_rlist
      procedure(aero_get_state_mmr), deferred :: get_cldbrne_mmr
      procedure(aero_get_state_num), deferred :: get_ambient_num
      procedure(aero_get_state_num), deferred :: get_cldbrne_num
+! CVB: all in physics, move them here? need to have these procedures
      procedure(aero_get_states), deferred :: get_states
+! CVB: follows the ones above
      procedure(aero_update_bin), deferred :: update_bin
+! CVB: only used in nucleate_ice_cam -> not implemented? not updating bin on everything currently
+! CVB: How are the changes to a bin applied? All added to tendencies and then applied at once?
      procedure :: loadaer
+! CVB: lot of hard-coded stuff. find out what it does, apply_number_limits seems to be a
+! modal thing? see aerosol_properties_mod
      procedure(aero_icenuc_size_wght_arr), deferred :: icenuc_size_wght_arr
      procedure(aero_icenuc_size_wght_val), deferred :: icenuc_size_wght_val
+! CVB: Ignore all ice nucleation for now?
      generic :: icenuc_size_wght => icenuc_size_wght_arr,icenuc_size_wght_val
      procedure :: icenuc_type_wght_base
+! CVB: used in get_amb_species_numdens but why??
      procedure :: icenuc_type_wght => icenuc_type_wght_base
      procedure :: nuclice_get_numdens
      procedure :: get_amb_species_numdens
      procedure :: get_cld_species_numdens
+! CVB: need this
      procedure :: coated_frac
+! CVB: monolayers, we don't care
      procedure :: mass_mean_radius
+! CVB: need this, seems fine
+! CVB: Question: keeps asking about very specific things, specific species, do we need that?
      procedure :: watact_mfactor
+! CVB: water activity mass factor. Either assume it works or put 1 for now
      procedure(aero_hetfrz_size_wght), deferred :: hetfrz_size_wght
      procedure(aero_hygroscopicity), deferred :: hygroscopicity
+! CVB: not currently used, nullified for now
      procedure(aero_water_uptake), deferred :: water_uptake
+! CVB: Give to Paul. Need to find radiation diagnostic list. Need to deal with it at some point
      procedure :: refractive_index_sw
      procedure :: refractive_index_lw
+! CVB: Why isn't this a property
      procedure(aero_volume), deferred :: dry_volume
      procedure(aero_volume), deferred :: wet_volume
      procedure(aero_volume), deferred :: water_volume
      procedure(aero_wet_diam), deferred :: wet_diameter
+! CVB: need all of these, should be fine
      procedure :: convcld_actfrac
+! CVB: here just set to 0.8
      procedure :: sol_factb_interstitial
+! CVB: use as is, probably
  end type aerosol_state
 
   ! for state fields
