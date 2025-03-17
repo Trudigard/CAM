@@ -493,6 +493,19 @@
     <desc>Nitrogen deposition mesh filename (corresponding to the CAM_STREAM_NDEP_DATA_FILENAME)</desc>
   </entry>
 
+  <entry id="CAM_AEROSOL_CONFIG">
+    <type>char</type>
+    <valid_values></valid_values>
+    <default_value>UNSET</default_value>
+    <group>build_component_cam</group>
+    <file>env_build.xml</file>
+    <desc>
+      Filename for the CAM oslo_sectional aerosol model configuration file.
+      A filename without a path must be in the aerosol model config directory.
+      A relative pathname should be in an accessible inputdata location.
+    </desc>
+  </entry>
+
   <help>
     =========================================
     CAM naming conventions
