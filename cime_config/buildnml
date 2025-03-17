@@ -4,7 +4,8 @@
 CAM namelist creator
 """
 # pylint: disable=multiple-imports
-import sys, os, shutil, filecmp
+import sys, os, shutil, filecmp, hashlib
+import QueryBuildCache
 
 _CIMEROOT = os.environ.get("CIMEROOT")
 if _CIMEROOT is None:
@@ -48,6 +49,8 @@ def buildnml(case, caseroot, compname):
     RUN_REFTOD          = case.get_value("RUN_REFTOD")
     COMP_INTERFACE      = case.get_value("COMP_INTERFACE")
 
+    CAM_AEROSOL_CONFIG  = case.get_value("CAM_AEROSOL_CONFIG")
+
     testsrc = os.path.join(srcroot, "components", "cam")
     if os.path.exists(testsrc):
         srcroot = testsrc
@@ -58,6 +61,50 @@ def buildnml(case, caseroot, compname):
     call_buildcpp = False
     camconf = os.path.join(caseroot, "Buildconf", "camconf")
     filename = os.path.join(camconf, "config_cache.xml")
+
+    if CAM_AEROSOL_CONFIG != 'UNSET':
+        # Only for the Oslo Sectional Aerosol Model, check if a configuration file is set for this compset
+        aerconf = os.path.join(srcroot, "src", "chemistry", "oslo_sectional", "config", CAM_AEROSOL_CONFIG)
+        sys.path.append(os.path.join(srcroot, "src", "chemistry", "oslo_sectional", "config")) # add config scripts to libdir
+        import bin_config
+        if os.path.isfile(aerconf):                                                            # check for secitional aerosol configfile
+            with open(aerconf, "r", encoding="utf-8") as f:                                    # create a hash from it
+                aerconf_read = f.read()
+                aerconf_hash = hashlib.md5(aerconf_read.encode("utf-8")).hexdigest()
+        case.set_value("CAM_AEROSOL_CONFIG_HASH", aerconf_hash)                                # set the corresponding xml variable
+        try:                                                                                   # compare its value to the one in the cache
+            aerconf_cache = QueryBuildCache.query_cache([filename, "CAM_AEROSOL_CONFIG_HASH"])
+        except:
+            aerconf_cache = 0.                                                                 # if no cache file exists -> set to 0
+        if aerconf_cache != aerconf_hash:                                                      # if the aerosol config file has changed
+            call_buildcpp = True                                                               # run bin configuration file and chemical pp
+            config_opts = CAM_CONFIG_OPTS.split(' ')
+            chem_infile = os.path.join(caseroot, 'oslo_sec_chem_mech.in')                     # where bin_config will write out the new chem_mech
+
+            try:
+                # TODO not sure how to handle the -usr_mech_infile option best, since we are occupying it here.
+                # My first idea is to check if a -usr_mech_infile is specified by the user
+                # if yes, add aerosol tracers and replace the specified -usr_mech_infile option with the edited file.
+                # bin_config checks whether the aerosol tracers are already in the usr_mech_infile and only adds ones that
+                # didn't exist in there previously
+                # might have to add a hash check for the chem_mech file in config_cache to see if it already exists in the case
+                usr_mech_index = config_opts.index('-usr_mech_infile')                         # check if a usr_mech_infile is already specified -> do nothing!
+                chemconf = config_opts[usr_mech_index +1]                                      # get user specified chem_mech infile
+                config_opts[usr_mech_index + 1] = chem_infile                                  # change the option to the file created in bin_config
+            except:
+                chem_index = config_opts.index('-chem')
+                CHEM_OPT = config_opts[chem_index + 1]                                             # specified in the compset
+                chemconf = os.path.join(srcroot, "src", "chemistry", "pp_" + CHEM_OPT, "chem_mech.in")
+                config_opts += ['-usr_mech_infile', chem_infile]
+
+            config_opts_out = " ".join(config_opts)
+            case.set_value("CAM_CONFIG_OPTS", config_opts_out)
+            oslo_sectional_in = os.path.join(caseroot, "oslo_sectional_in")                    # where bin_config will write out a temporary nl file
+            # call bin_config to set up the sectional aerosol model
+            bin_config.bin_config(aerconf, chemconf, chem_infile, oslo_sectional_in)
+            expect(os.path.isfile(chem_infile), " failed to create new chem_mech file")       # TODO: write more log/error messages?
+            expect(os.path.isfile(oslo_sectional_in), " failed to create new sectional aerosol namelist file")
+
     if not os.path.isfile(filename):
         call_buildcpp = True
     else:
@@ -179,6 +226,23 @@ def buildnml(case, caseroot, compname):
         rc, out, err = run_cmd(cmd, from_dir=camconf)
         expect(rc==0,"Command %s failed rc=%d\nout=%s\nerr=%s"%(cmd,rc,out,err))
 
+        # -----------------------------------------------------
+        # Add Oslo Sectional to atm_in
+        # -----------------------------------------------------
+
+        if CAM_AEROSOL_CONFIG != 'UNSET':
+            # Only run if a config file for the oslo_sectional aerosol scheme is specified
+            # either via compset defaults or the CAM_AEROSOL_CONFIG xml variable
+            atm_nlfile = os.path.join(camconf, "atm_in")            # get atm_in namelist file
+            oslo_atm_nlfile = os.path.join(camconf, "atm_in_oslo")  # temporary atm_in namelist file
+            shutil.move(atm_nlfile, oslo_atm_nlfile)                # move atm_in to temporary nl file
+
+            bin_config.add_oslo_sectional_nl(oslo_atm_nlfile, oslo_sectional_in, atm_nlfile)
+
+            expect(os.path.isfile(atm_nlfile), f" Missing {atm_nlfile}")
+
+            os.remove(oslo_atm_nlfile)                              # rm temporary files
+            os.remove(oslo_sectional_in)
         # -----------------------------------------------------
         # copy resolved namelist, atm_in, to rundir
         # -----------------------------------------------------
