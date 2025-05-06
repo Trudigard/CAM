@@ -492,7 +492,11 @@
     <file>env_run.xml</file>
     <desc>Nitrogen deposition mesh filename (corresponding to the CAM_STREAM_NDEP_DATA_FILENAME)</desc>
   </entry>
-
+  <!--
+    ===============
+    Sectional Aerosol opts
+    ===============
+   -->
   <entry id="CAM_AEROSOL_CONFIG">
     <type>char</type>
     <valid_values></valid_values>
