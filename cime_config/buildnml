@@ -237,7 +237,7 @@ def buildnml(case, caseroot, compname):
             oslo_atm_nlfile = os.path.join(camconf, "atm_in_oslo")  # temporary atm_in namelist file
             shutil.move(atm_nlfile, oslo_atm_nlfile)                # move atm_in to temporary nl file
 
-            bin_config.add_oslo_sectional_nl(oslo_atm_nlfile, oslo_sectional_in, atm_nlfiles)
+            bin_config.add_oslo_sectional_nl(oslo_atm_nlfile, oslo_sectional_in, atm_nlfile)
 
             expect(os.path.isfile(atm_nlfile), f" Missing {atm_nlfile}")
 
