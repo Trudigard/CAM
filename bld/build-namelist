@@ -959,7 +959,11 @@ if ($chem =~ /_mam_oslo/) {
     $aer_model = 'oslo';
 }
 
-if ($aer_model eq 'oslo') {
+if (chem =~ /_oslo_sectional/) {
+    $aer_model = 'oslo_sectional';
+}
+
+if ($aer_model eq 'oslo') or ($aer_model eq 'oslo_sectional') {
 
    #do nothing here
 
