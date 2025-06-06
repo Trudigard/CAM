@@ -8,6 +8,10 @@ module chemistry
   use shr_kind_mod,        only: r8 => shr_kind_r8
   use physics_types,       only: physics_state, physics_ptend
   use ppgrid,              only: begchunk, endchunk, pcols
+  use mo_gas_phase_chemdr, only : map2chm
+  use spmd_utils,       only : masterproc
+  use cam_logfile,      only : iulog
+
 
   implicit none
   private
@@ -40,7 +44,8 @@ module chemistry
      module procedure chem_read_restart_pio
   end interface
 
-  ! Private data
+  ! species indices
+     integer :: h2o_ndx
 
 !================================================================================================
 contains
@@ -71,6 +76,7 @@ contains
     use constituents,   only : cnst_add, cnst_name
     use mo_sim_dat,     only : set_sim_dat
     use mo_tracname,    only : solsym
+    use mo_chem_utls,   only : get_spc_ndx, get_inv_ndx
     use chem_mods,      only : adv_mass, gas_pcnst
 
     implicit none
@@ -84,25 +90,33 @@ contains
     logical               :: cam_outfld
     character(len=128)    :: lng_name        ! variable long name
 
+
 !-----------------------------------------------------------------------
 ! Set the simulation chemistry variables
 !-----------------------------------------------------------------------
 ! - currently no chemistry - only aerosol
     call set_sim_dat ! get arrays/vars from mo_sim_dat
-!-----------------------------------------------------------------------
+
+
+    h2o_ndx   = get_spc_ndx('H2O')
+
+!--------------------------------------------------------------
 ! Set names of diffused variable tendencies and declare them as history variables
 !-----------------------------------------------------------------------
     do m = 1, gas_pcnst !
       lng_name = trim( solsym(m) )
 
       qmin = 1.e-36_r8
+      if ( m == h2o_ndx ) then
+        map2chm(1) = m
+        cycle
+      endif
 
       call cnst_add( solsym(m), adv_mass(m), cptmp, qmin, n, cam_outfld=cam_outfld, &
                          longname=trim(lng_name) )
     end do
    ! for prescribed aerosols
     call aero_model_register()
-
   end subroutine chem_register
 
 !================================================================================================
@@ -154,7 +168,7 @@ contains
     !          (declare history variables)
     !
     !-----------------------------------------------------------------------
-    use physics_buffer, only : physics_buffer_desc
+    use physics_buffer, only : physics_buffer_desc, pbuf_get_index, pbuf_set_field
     use aero_model,     only : aero_model_init
 
     type(physics_state), intent(in):: phys_state(begchunk:endchunk)
