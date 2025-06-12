@@ -5,13 +5,12 @@
 !================================================================================================
 
 module chemistry
-  use shr_kind_mod,        only: r8 => shr_kind_r8
-  use physics_types,       only: physics_state, physics_ptend
-  use ppgrid,              only: begchunk, endchunk, pcols
-  use mo_gas_phase_chemdr, only : map2chm
-  use spmd_utils,       only : masterproc
-  use cam_logfile,      only : iulog
-
+  use shr_kind_mod,                     only: r8 => shr_kind_r8
+  use physics_types,                    only: physics_state, physics_ptend
+  use ppgrid,                           only: begchunk, endchunk, pcols
+  use mo_gas_phase_chemdr,              only : map2chm
+  use spmd_utils,                       only : masterproc
+  use cam_logfile,                      only : iulog
 
   implicit none
   private
@@ -123,10 +122,12 @@ contains
 
   subroutine chem_readnl(nlfile)
 
-    ! args
+    use aero_model,     only: aero_model_readnl
 
-    character(len=*), intent(in) :: nlfile  ! filepath for file containing namelist input
+    character(len=*), intent(in) :: nlfile
+    character(len=*), parameter  :: subname = 'chem_readnl'
 
+    !call aero_model_readnl(nlfile)
 
   end subroutine chem_readnl
 
@@ -174,8 +175,12 @@ contains
     type(physics_state), intent(in):: phys_state(begchunk:endchunk)
     type(physics_buffer_desc), pointer :: pbuf2d(:,:)
 
+    character(len=6) :: nlfile
+
+    nlfile = "atm_in" ! TODO: fix this so atm_in comes from cam_comp?
+
    ! for prescribed aerosols
-    call aero_model_init(pbuf2d)
+    call aero_model_init(pbuf2d, nlfile)
 
   end subroutine chem_init
 
