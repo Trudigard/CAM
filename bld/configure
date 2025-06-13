@@ -2168,6 +2168,7 @@ sub write_filepath
     }
     if ($chem =~/_oslo_sectional/) {
         print $fh "$camsrcdir/src/chemistry/oslo_sectional/src\n";
+        print $fh "$camsrcdir/src/chemistry/oslo_sectional/src/base_objects\n";
     }
 
     # CAM-Nor-physics has precedence over everything except SourceMods and oslo-aero
