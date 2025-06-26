@@ -253,6 +253,6 @@
     path = tools/AeroTab
     url = https://github.com/NorESMhub/AeroTab
 
-[submodule "src/chemistry/oslo_sectional"]
+[submodule "oslo_sectional"]
 	path = src/chemistry/oslo_sectional
 	url = git@github.com:Trudigard/OsloSectional.git
