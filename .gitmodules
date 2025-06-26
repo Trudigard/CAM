@@ -248,6 +248,7 @@ url = https://github.com/ESCOMP/MOSART
 fxtag = mosart1.1.02
 fxrequired = ToplevelRequired
 fxDONOTUSEurl = https://github.com/ESCOMP/MOSART
-[submodule "src/chemistry/oslo_sectional"]
+
+[submodule "oslo_sectional"]
 	path = src/chemistry/oslo_sectional
 	url = git@github.com:Trudigard/OsloSectional.git
