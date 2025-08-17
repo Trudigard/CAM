@@ -249,10 +249,6 @@
     fxrequired = ToplevelRequired
     fxDONOTUSEurl = https://github.com/NorESMhub/MOSART
 
-[submodule "tools/AeroTab"]
-    path = tools/AeroTab
-    url = https://github.com/NorESMhub/AeroTab
-
 [submodule "oslo_sectional"]
 	path = src/chemistry/oslo_sectional
 	url = git@github.com:Trudigard/OsloSectional.git
