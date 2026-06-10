@@ -171,7 +171,7 @@
     <machines>
       <machine name="betzy" compiler="intel" category="aux_cam_noresm"/>
       <machine name="olivia" compiler="intel" category="aux_cam_noresm"/>
-      <machine name="olivia" compiler="intel" category="test_sectional"/>
+      <machine name="olivia" compiler="gnu" category="test_sectional"/>
     </machines>
     <options>
       <option name="wallclock">00:29:00</option>
