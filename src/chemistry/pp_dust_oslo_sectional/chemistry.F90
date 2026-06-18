@@ -340,7 +340,7 @@ contains
     use mo_drydep,         only: drydep_srf_file
     use mo_sulf,           only: sulf_readnl
     use species_sums_diags,only: species_sums_readnl
-    !use ocean_emis,        only: ocean_emis_readnl
+    use ocean_emis,        only: ocean_emis_readnl
 
     ! args
     character(len=*), intent(in) :: nlfile
@@ -553,7 +553,7 @@ contains
     call mo_apex_readnl(nlfile)
     call sulf_readnl(nlfile)
     call species_sums_readnl(nlfile)
-    !call ocean_emis_readnl(nlfile) ! TODO: DMS emissions, add to build-namelist and aero_model as well
+    call ocean_emis_readnl(nlfile) ! TODO: DMS emissions, add to build-namelist and aero_model as well
 
   end subroutine chem_readnl
 
@@ -633,7 +633,7 @@ contains
     use constituents,        only: sflxnam
     use fire_emissions,      only: fire_emissions_init
     use short_lived_species, only: short_lived_species_initic
-    !use ocean_emis,          only: ocean_emis_init, ocean_emis_species
+    use ocean_emis,          only: ocean_emis_init, ocean_emis_species
     use mo_srf_emissions,    only: has_emis
     use aero_model,          only: aero_model_init
 
@@ -771,7 +771,7 @@ contains
 
     call short_lived_species_initic()
 
-    !call ocean_emis_init()
+    call ocean_emis_init()
     !-----------------------------------------------------------------------
     ! Set names of chemistry variable tendencies and declare them as history variables
     !-----------------------------------------------------------------------
@@ -831,7 +831,7 @@ contains
     use mo_srf_emissions, only: set_srf_emissions
     use hco_cc_emissions, only: hco_set_srf_emissions
     use fire_emissions,   only: fire_emissions_srf
-    !use ocean_emis,       only: ocean_emis_getflux
+    use ocean_emis,       only: ocean_emis_getflux
 
     ! Arguments:
 
@@ -906,7 +906,7 @@ contains
     call fire_emissions_srf( lchnk, ncol, cam_in%fireflx, cam_in%cflx )
 
     ! air-sea exchange of trace gases
-    !call ocean_emis_getflux(lchnk, ncol, state, cam_in%u10, cam_in%sst, cam_in%ocnfrac, cam_in%icefrac, cam_in%cflx)
+    call ocean_emis_getflux(lchnk, ncol, state, cam_in%u10, cam_in%sst, cam_in%ocnfrac, cam_in%icefrac, cam_in%cflx)
 
   end subroutine chem_emissions
 
@@ -1022,7 +1022,7 @@ contains
 
     use cfc11star,         only: update_cfc11star
     use physics_buffer,    only: physics_buffer_desc
-    !use ocean_emis,        only: ocean_emis_advance
+    use ocean_emis,        only: ocean_emis_advance
     use mee_fluxes,        only: mee_fluxes_adv
 
     implicit none
@@ -1097,7 +1097,7 @@ contains
     ! medium energy electron flux data ...
     call mee_fluxes_adv()
 
-    !call ocean_emis_advance( pbuf2d, phys_state )
+    call ocean_emis_advance( pbuf2d, phys_state )
 
   end subroutine chem_timestep_init
 
