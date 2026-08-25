@@ -1,1 +1,5 @@
 use_hetfrz_classnuc=.false.
+mfilt=30
+nhtfrq=-24
+interpolate_output = .true., .true., .true., .true., .true., .true.
+interpolate_type = 1, 1, 1, 1, 1, 1
