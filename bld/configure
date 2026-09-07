@@ -1978,7 +1978,6 @@ sub write_filepath
     # take camnor files from oslo_aero
     if ($chem =~/_oslo_sectional/) {
         print $fh "$camsrcdir/src/chemistry/oslo_sectional/src\n";
-        print $fh "$camsrcdir/src/chemistry/oslo_sectional/src/base_objects\n";
         print $fh "$camsrcdir/src/chemistry/oslo_sectional/src_cam\n";
         print $fh "$camsrcdir/src/chemistry/oslo_sectional/src_osloaero\n";
     }
