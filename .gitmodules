@@ -240,5 +240,5 @@
     fxDONOTUSEurl = https://github.com/NorESMhub/MOSART
 
 [submodule "oslo_sectional"]
-	path = src/chemistry/oslo_sectional
+	path = src/chemistry/FANCI
 	url = git@github.com:Trudigard/OsloSectional.git
