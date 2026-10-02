@@ -64,8 +64,8 @@ def buildnml(case, caseroot, compname):
 
     if CAM_AEROSOL_CONFIG != 'UNSET':
         # Only for the Oslo Sectional Aerosol Model, check if a configuration file is set for this compset
-        aerconf = os.path.join(srcroot, "src", "chemistry", "oslo_sectional", "config", CAM_AEROSOL_CONFIG)
-        sys.path.append(os.path.join(srcroot, "src", "chemistry", "oslo_sectional", "config")) # add config scripts to libdir
+        aerconf = os.path.join(srcroot, "src", "chemistry", "FANCI", "config", CAM_AEROSOL_CONFIG)
+        sys.path.append(os.path.join(srcroot, "src", "chemistry", "FANCI", "config")) # add config scripts to libdir
         import bin_config
         if os.path.isfile(aerconf):                                                            # check for secitional aerosol configfile
             with open(aerconf, "r", encoding="utf-8") as f:                                    # create a hash from it
