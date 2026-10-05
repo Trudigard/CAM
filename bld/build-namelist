@@ -2941,6 +2941,7 @@ if ($chem =~ "oslo_sectional") {
     add_default($nl, 'convproc_do_aer', 'val'=>'.false.');
     # for now keep resuspension handling on the classic (non-convproc) path
     add_default($nl, 'convproc_do_evaprain_atonce', 'val'=>'.false.');
+
     my %species;
 
     # Surface emission datasets:
