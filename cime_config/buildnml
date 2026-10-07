@@ -66,7 +66,7 @@ def buildnml(case, caseroot, compname):
         # Only for the FANCI Oslo Sectional Aerosol Model, check if a configuration file is set for this compset
         aerconf = os.path.join(srcroot, "src", "chemistry", "FANCI", "config", CAM_AEROSOL_CONFIG)
         sys.path.append(os.path.join(srcroot, "src", "chemistry", "FANCI", "config")) # add config scripts to libdir
-        import bin_config
+        import fanci_config
         if os.path.isfile(aerconf):                                                            # check for secitional aerosol configfile
             with open(aerconf, "r", encoding="utf-8") as f:                                    # create a hash from it
                 aerconf_read = f.read()
@@ -79,18 +79,18 @@ def buildnml(case, caseroot, compname):
         if aerconf_cache != aerconf_hash:                                                      # if the aerosol config file has changed
             call_buildcpp = True                                                               # run bin configuration file and chemical pp
             config_opts = CAM_CONFIG_OPTS.split(' ')
-            chem_infile = os.path.join(caseroot, 'oslo_sec_chem_mech.in')                     # where bin_config will write out the new chem_mech
+            chem_infile = os.path.join(caseroot, 'oslo_sec_chem_mech.in')                     # where fanci_config will write out the new chem_mech
 
             try:
                 # TODO not sure how to handle the -usr_mech_infile option best, since we are occupying it here.
                 # My first idea is to check if a -usr_mech_infile is specified by the user
                 # if yes, add aerosol tracers and replace the specified -usr_mech_infile option with the edited file.
-                # bin_config checks whether the aerosol tracers are already in the usr_mech_infile and only adds ones that
+                # fanci_config checks whether the aerosol tracers are already in the usr_mech_infile and only adds ones that
                 # didn't exist in there previously
                 # might have to add a hash check for the chem_mech file in config_cache to see if it already exists in the case
                 usr_mech_index = config_opts.index('-usr_mech_infile')                         # check if a usr_mech_infile is already specified -> do nothing!
                 chemconf = config_opts[usr_mech_index +1]                                      # get user specified chem_mech infile
-                config_opts[usr_mech_index + 1] = chem_infile                                  # change the option to the file created in bin_config
+                config_opts[usr_mech_index + 1] = chem_infile                                  # change the option to the file created in fanci_config
             except:
                 chem_index = config_opts.index('-chem')
                 CHEM_OPT = config_opts[chem_index + 1]                                             # specified in the compset
@@ -100,9 +100,9 @@ def buildnml(case, caseroot, compname):
 
             config_opts_out = " ".join(config_opts)
             case.set_value("CAM_CONFIG_OPTS", config_opts_out)
-            FANCI_in = os.path.join(caseroot, "FANCI_in")                    # where bin_config will write out a temporary nl file
-            # call bin_config to set up the sectional aerosol model
-            bin_config.bin_config(aerconf, chemconf, chem_infile, FANCI_in)
+            FANCI_in = os.path.join(caseroot, "FANCI_in")                    # where fanci_config will write out a temporary nl file
+            # call fanci_config to set up the sectional aerosol model
+            fanci_config.fanci_config(aerconf, chemconf, chem_infile, FANCI_in)
             expect(os.path.isfile(chem_infile), " failed to create new chem_mech file")       # TODO: write more log/error messages?
             expect(os.path.isfile(FANCI_in), " failed to create new FANCI sectional aerosol namelist file")
 
@@ -238,7 +238,7 @@ def buildnml(case, caseroot, compname):
             tmp_atm_nlfile = os.path.join(camconf, "atm_in_oslo")  # temporary atm_in namelist file
             shutil.move(atm_nlfile, tmp_atm_nlfile)                # move atm_in to temporary nl file
 
-            bin_config.add_FANCI_nl(tmp_atm_nlfile, FANCI_in, atm_nlfile)
+            fanci_config.add_FANCI_nl(tmp_atm_nlfile, FANCI_in, atm_nlfile)
 
             expect(os.path.isfile(atm_nlfile), f" Missing {atm_nlfile}")
 
