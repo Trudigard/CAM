@@ -1982,12 +1982,12 @@ sub write_filepath
     # needs to take precedence over everything. This is because several shadow files
     # for oslo_aero routines are now in camnor_physics and contain stub interfaces
     # needed for use statements. These replace the previous use of #ifdef OSLO_AERO queries.
-    if ($chem =~/_oslo/ and not $chem=~/_fanci/) {
+    if ($chem =~/_oslo/) {
         print $fh "$camsrcdir/src/chemistry/oslo_aero/src\n";
         print $fh "$camsrcdir/src/chemistry/oslo_aero/src_cam\n";
     }
     # take camnor files from oslo_aero
-    if ($chem =~/_fanci/) {
+    if (($chem eq 'fanci') or ($chem =~/_fanci/)) {
         print $fh "$camsrcdir/src/chemistry/FANCI/src\n";
         print $fh "$camsrcdir/src/chemistry/FANCI/src_cam\n";
     }
@@ -2060,7 +2060,7 @@ sub write_filepath
         print $fh "$camsrcdir/src/chemistry/carma_aero\n";
     } elsif ($chem =~ /_mam/) {
         print $fh "$camsrcdir/src/chemistry/modal_aero\n";
-    } elsif (not ($chem =~ /_fanci/)) {
+    } elsif (($chem ne 'fanci') and ($chem !~ /_fanci/)) {
 	    print $fh "$camsrcdir/src/chemistry/bulk_aero\n";
     }
     print $fh "$camsrcdir/src/chemistry/aerosol\n";
