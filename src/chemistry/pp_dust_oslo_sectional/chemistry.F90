@@ -22,7 +22,7 @@ module chemistry
   use ref_pres,             only: ptop_ref
   use phys_control,         only: waccmx_is   ! WACCM-X switch query function
   use phys_control,         only: use_hemco   ! HEMCO switch logical
-  use mo_gas_phase_chemdr,  only: map2chm
+  use mo_gas_phase_chemdr,  only: map2chm, initialize_map2chm
   use spmd_utils,           only: masterproc
   use cam_logfile,          only: iulog
   use mo_chm_diags,         only: chem_has_ndep_flx => chm_prod_ndep_flx
@@ -197,6 +197,7 @@ contains
     character(len=128)    :: mixtype
     character(len=128)    :: molectype
     integer               :: islvd
+    integer               :: new_chm_map(pcnst)
 
     character(len=*), parameter :: subname = 'chem_register'
 !-----------------------------------------------------------------------
@@ -204,6 +205,8 @@ contains
 !-----------------------------------------------------------------------
 ! - currently no chemistry - only aerosol
     call set_sim_dat ! get arrays/vars from mo_sim_dat
+
+    new_chm_map(:) = 0
 
     o3_ndx    = get_spc_ndx('O3')
     o3_inv_ndx= get_inv_ndx('O3')
@@ -286,7 +289,7 @@ contains
         else if( m == nop_ndx ) then
             lng_name = 'NO+'
         else if( m == h2o_ndx ) then
-            map2chm(1) = m
+            new_chm_map(1) = m
             cycle
         endif
 
@@ -306,10 +309,12 @@ contains
             if( imozart == -1 ) then
                 imozart = n
             end if
-            map2chm(n) = m
+            new_chm_map(n) = m
         endif
 
     end do
+
+    call initialize_map2chm(new_chm_map)
 
     call register_short_lived_species()
     call register_cfc11star()
