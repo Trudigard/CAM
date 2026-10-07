@@ -572,7 +572,7 @@ if ($cfg->get('debug')) {
 my $prescribe_aerosols = $TRUE;
 if ($simple_phys) {$prescribe_aerosols = $FALSE;}
 
-if( $chem =~ /_oslo/){
+if( $chem =~ /_oslo/ or $chem =~ /_fanci/ or $chem eq 'fanci' ){
     # Oslo Aero does not support a prescribed aerosol mode
     $prescribe_aerosols = $FALSE;
 }
@@ -638,7 +638,7 @@ if ($chem) {
 
         # drydep_srf_file is only needed for prognostic MAM when the grid is unstructured.
         # structured grids can do interpolation on the fly.
-        if (($chem =~ /_mam/ or $chem =~/_oslo_sectional/) and ($dyn =~ /se|fv3|mpas/)) {
+        if (($chem =~ /_mam/ or $chem =~/_fanci/ or $chem eq 'fanci') and ($dyn =~ /se|fv3|mpas/)) {
             add_default($nl, 'drydep_srf_file');
         }
     }
@@ -953,7 +953,7 @@ if (($chem =~ /waccm_ma/ or $chem =~ /waccm_tsmlt/ or $chem =~ /waccm_t4ma/) and
 elsif (($chem =~ /trop_strat/ or $chem =~ /geoschem/) and !$chem_rad_passive) {
     $radval .= ",'N:O2:O2','A:CO2:CO2'";
 }
-elsif (($co2_cycle and !$co2_cycle_rad_passive) or ($chem =~ /ghg_mam4/) or ($chem =~ /ghg_mam_oslo/) or ($chem =~/oslo_sectional/)) {
+elsif (($co2_cycle and !$co2_cycle_rad_passive) or ($chem =~ /ghg_mam4/) or ($chem =~ /ghg_mam_oslo/) or ($chem =~/fanci/)) {
     $radval .= ",'N:O2:O2','A:CO2:CO2'";
 }
 else {
@@ -977,7 +977,7 @@ if ($rad_prog_ozone) {
     die "ERROR: can not set ozone rad_climate specification\n";
 }
 
-if ((($chem =~ /ghg_mam4/) or ($chem =~ /ghg_mam_oslo/) or ($chem =~ /oslo_sectional/) or ($chem =~ /waccm_ma/) or ($chem =~ /waccm_t4ma/) or ($chem =~ /waccm_sc_mam/) or ($chem =~ /waccm_tsmlt/) or ($chem =~ /trop_strat/)) and !$chem_rad_passive ) {
+if ((($chem =~ /ghg_mam4/) or ($chem =~ /ghg_mam_oslo/) or ($chem =~ /fanci/) or ($chem =~ /waccm_ma/) or ($chem =~ /waccm_t4ma/) or ($chem =~ /waccm_sc_mam/) or ($chem =~ /waccm_tsmlt/) or ($chem =~ /trop_strat/)) and !$chem_rad_passive ) {
     $radval .= ",'A:N2O:N2O','A:CH4:CH4','N:CFC11STAR:CFC11','A:CFC12:CFC12'";
 } elsif ($prog_ghg1 and $prog_ghg2 and !$chem_rad_passive ) {
     $radval .= ",'A:N2O:N2O','A:CH4:CH4','A:CFC11:CFC11','A:CFC12:CFC12'";
@@ -1024,7 +1024,7 @@ if ($chem =~ /_mam_oslo/) {
 if ($aer_model eq 'oslo') {
   add_default($nl, 'emis_fact_in_coarse_mode', 'ver'=>'oslo_aero');
   add_default($nl, 'seasalt_emis_scale',  'ver'=>'oslo_aero');
-} elsif ($aer_model eq 'oslo_sectional' or $aer_model eq 'FANCI') {
+} elsif ($aer_model eq 'FANCI') {
 
    #do nothing here
 
@@ -2982,7 +2982,7 @@ if ($chem eq 'trop_mam_oslo' or $chem eq 'ghg_mam_oslo') {
         add_default($nl, $file);
     }
 }
-if ($chem =~ "oslo_sectional") {
+if ($chem =~ "fanci") {
     # aero_convproc is not yet ported to the sectional (range-based) mass indexing
     add_default($nl, 'convproc_do_aer', 'val'=>'.false.');
     # for now keep resuspension handling on the classic (non-convproc) path
@@ -3162,7 +3162,7 @@ if ($waccmx){
     $maxzen = 116.;
 } elsif ($chem =~ "trop_strat" or $chem =~ "waccm_" or $model_top eq "ht") {
     $maxzen = 97.01;
-} elsif ($chem =~ "trop_mam" or $chem =~ "trop_mozart" or $chem =~ "ghg_mam" or $chem =~ "oslo_sectional") {
+} elsif ($chem =~ "trop_mam" or $chem =~ "trop_mozart" or $chem =~ "ghg_mam" or $chem =~ "fanci") {
     $maxzen = 88.85;
 }
 if ($maxzen>0.0) {
@@ -3943,7 +3943,7 @@ if ($clubb_sgs  =~ /$TRUE/io) {
 }
 
 # Tuning for wet scavenging of modal aerosols
-if ($chem =~ /_mam/ or $chem =~ /oslo_sectional/) {
+if ($chem =~ /_mam/ or $chem =~ /fanci/) {
     add_default($nl, 'sol_facti_cloud_borne');
     add_default($nl, 'sol_factb_interstitial');
     add_default($nl, 'sol_factic_interstitial');
