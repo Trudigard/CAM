@@ -239,6 +239,6 @@
     fxrequired = ToplevelRequired
     fxDONOTUSEurl = https://github.com/NorESMhub/MOSART
 
-[submodule "oslo_sectional"]
+[submodule "FANCI"]
 	path = src/chemistry/FANCI
-	url = git@github.com:Trudigard/OsloSectional.git
+	url = git@github.com:Trudigard/FANCI.git
