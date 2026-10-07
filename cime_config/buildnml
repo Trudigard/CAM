@@ -63,7 +63,7 @@ def buildnml(case, caseroot, compname):
     filename = os.path.join(camconf, "config_cache.xml")
 
     if CAM_AEROSOL_CONFIG != 'UNSET':
-        # Only for the Oslo Sectional Aerosol Model, check if a configuration file is set for this compset
+        # Only for the FANCI Oslo Sectional Aerosol Model, check if a configuration file is set for this compset
         aerconf = os.path.join(srcroot, "src", "chemistry", "FANCI", "config", CAM_AEROSOL_CONFIG)
         sys.path.append(os.path.join(srcroot, "src", "chemistry", "FANCI", "config")) # add config scripts to libdir
         import bin_config
@@ -100,11 +100,11 @@ def buildnml(case, caseroot, compname):
 
             config_opts_out = " ".join(config_opts)
             case.set_value("CAM_CONFIG_OPTS", config_opts_out)
-            oslo_sectional_in = os.path.join(caseroot, "oslo_sectional_in")                    # where bin_config will write out a temporary nl file
+            FANCI_in = os.path.join(caseroot, "FANCI_in")                    # where bin_config will write out a temporary nl file
             # call bin_config to set up the sectional aerosol model
-            bin_config.bin_config(aerconf, chemconf, chem_infile, oslo_sectional_in)
+            bin_config.bin_config(aerconf, chemconf, chem_infile, FANCI_in)
             expect(os.path.isfile(chem_infile), " failed to create new chem_mech file")       # TODO: write more log/error messages?
-            expect(os.path.isfile(oslo_sectional_in), " failed to create new sectional aerosol namelist file")
+            expect(os.path.isfile(FANCI_in), " failed to create new FANCI sectional aerosol namelist file")
 
     if not os.path.isfile(filename):
         call_buildcpp = True
@@ -232,18 +232,18 @@ def buildnml(case, caseroot, compname):
         # -----------------------------------------------------
 
         if CAM_AEROSOL_CONFIG != 'UNSET':
-            # Only run if a config file for the oslo_sectional aerosol scheme is specified
+            # Only run if a config file for the FANCI aerosol scheme is specified
             # either via compset defaults or the CAM_AEROSOL_CONFIG xml variable
             atm_nlfile = os.path.join(camconf, "atm_in")            # get atm_in namelist file
-            oslo_atm_nlfile = os.path.join(camconf, "atm_in_oslo")  # temporary atm_in namelist file
-            shutil.move(atm_nlfile, oslo_atm_nlfile)                # move atm_in to temporary nl file
+            tmp_atm_nlfile = os.path.join(camconf, "atm_in_oslo")  # temporary atm_in namelist file
+            shutil.move(atm_nlfile, tmp_atm_nlfile)                # move atm_in to temporary nl file
 
-            bin_config.add_oslo_sectional_nl(oslo_atm_nlfile, oslo_sectional_in, atm_nlfile)
+            bin_config.add_FANCI_nl(tmp_atm_nlfile, FANCI_in, atm_nlfile)
 
             expect(os.path.isfile(atm_nlfile), f" Missing {atm_nlfile}")
 
-            os.remove(oslo_atm_nlfile)                              # rm temporary files
-            os.remove(oslo_sectional_in)
+            os.remove(tmp_atm_nlfile)                              # rm temporary files
+            os.remove(FANCI_in)
         # -----------------------------------------------------
         # copy resolved namelist, atm_in, to rundir
         # -----------------------------------------------------
