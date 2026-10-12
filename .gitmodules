@@ -75,6 +75,13 @@
     fxrequired = AlwaysRequired
     fxDONOTUSEurl = https://github.com/CFMIP/COSPv2.0
 
+[submodule "FANCI"]
+	path = src/chemistry/FANCI
+	url = https://github.com/Trudigard/FANCI.git
+    fxtag = name_changes
+    fxrequired = AlwaysRequired
+    fxDONOTUSEurl = https://github.com/NorESMhub/FANCI
+
 [submodule "hemco"]
     path = src/hemco
     url = https://github.com/ESCOMP/HEMCO_CESM.git
@@ -239,6 +246,3 @@
     fxrequired = ToplevelRequired
     fxDONOTUSEurl = https://github.com/NorESMhub/MOSART
 
-[submodule "FANCI"]
-	path = src/chemistry/FANCI
-	url = git@github.com:Trudigard/FANCI.git
