@@ -76,8 +76,8 @@
     fxDONOTUSEurl = https://github.com/CFMIP/COSPv2.0
 
 [submodule "FANCI"]
-	path = src/chemistry/FANCI
-	url = https://github.com/Trudigard/FANCI.git
+    path = src/chemistry/FANCI
+    url = https://github.com/Trudigard/FANCI.git
     fxtag = name_changes
     fxrequired = AlwaysRequired
     fxDONOTUSEurl = https://github.com/NorESMhub/FANCI
