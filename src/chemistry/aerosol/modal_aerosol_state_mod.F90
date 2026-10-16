@@ -372,7 +372,7 @@ contains
   !------------------------------------------------------------------------------
   !------------------------------------------------------------------------------
   subroutine update_bin( self, bin_ndx, col_ndx, lyr_ndx, delmmr_sum, delnum_sum, tnd_ndx, dtime, tend )
-    class(modal_aerosol_state), intent(in) :: self
+    class(modal_aerosol_state), intent(inout) :: self
     integer, intent(in) :: bin_ndx                ! bin number
     integer, intent(in) :: col_ndx                ! column index
     integer, intent(in) :: lyr_ndx                ! vertical layer index

@@ -557,6 +557,7 @@ subroutine microp_aero_run ( &
    real(r8), allocatable :: factnum(:,:,:) ! activation fraction for aerosol number
 
    class(aerosol_state), pointer :: aero_state1_obj
+   class(aerosol_properties), pointer :: aero_props=>null()
 
    !-------------------------------------------------------------------------------
 

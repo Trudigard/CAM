@@ -244,6 +244,7 @@ def buildnml(case, caseroot, compname):
 
             os.remove(tmp_atm_nlfile)                              # rm temporary files
             os.remove(FANCI_in)
+
         # -----------------------------------------------------
         # copy resolved namelist, atm_in, to rundir
         # -----------------------------------------------------
